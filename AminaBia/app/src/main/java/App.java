@@ -7,13 +7,22 @@ public class App {
     public double calculate(List<Double> prices, List<Integer> quantities,
                              String customerType, String discountCode) {
 
-        // Calculate subtotal
+        double subtotal = calculateSubtotal(prices, quantities);
+        double discount = calculateDiscount(subtotal, customerType, discountCode);
+        double tax = calculateTax(subtotal, discount, customerType);
+
+        return subtotal - discount + tax;
+    }
+
+    private double calculateSubtotal(List<Double> prices, List<Integer> quantities) {
         double subtotal = 0;
         for (int i = 0; i < prices.size(); i++) {
             subtotal += prices.get(i) * quantities.get(i);
         }
+        return subtotal;
+    }
 
-        // Apply discount
+    private double calculateDiscount(double subtotal, String customerType, String discountCode) {
         double discount = 0;
         if (discountCode.equals("SAVE10")) {
             discount = subtotal * 0.10;
@@ -22,22 +31,17 @@ public class App {
         } else if (discountCode.equals("SAVE5")) {
             discount = subtotal * 0.05;
         }
-
-        // VIP gets extra 5%
         if (customerType.equals("VIP")) {
             discount += subtotal * 0.05;
         }
+        return discount;
+    }
 
-        // Calculate tax
-        double tax = 0;
+    private double calculateTax(double subtotal, double discount, String customerType) {
         if (customerType.equals("VIP")) {
-            tax = (subtotal - discount) * 0.05;
+            return (subtotal - discount) * 0.05;
         } else {
-            tax = (subtotal - discount) * 0.10;
+            return (subtotal - discount) * 0.10;
         }
-
-        // Final price
-        double total = subtotal - discount + tax;
-        return total;
     }
 }
